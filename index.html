@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Addon Finder</title>
+    <meta
+      name="description"
+      content="Поиск AI-аддонов: Cursor rules, Obsidian-плагины, MCP-серверы и skills."
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='12' width='64' height='64' fill='%23d4a054'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="mark" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none">
+            <path d="M12 28V16l10-6 10 6v12l-10 6-10-6z" stroke="#1a140c" stroke-width="1.8" />
+            <path d="M22 16v12M12 16l10 6 10-6" stroke="#1a140c" stroke-width="1.8" />
+          </svg>
+        </div>
+        <div>
+          <h1>AI Addon Finder</h1>
+          <p class="lede">
+            Найдите <em>плагин, MCP, skill или правило</em> по короткому запросу.
+            Русский или English — без бэкенда и ключей.
+          </p>
+        </div>
+      </header>
+
+      <form id="search-form" class="search">
+        <label for="prompt">Запрос · Prompt</label>
+        <textarea
+          id="prompt"
+          name="prompt"
+          rows="3"
+          placeholder="Например: плагин для Obsidian с ИИ"
+          autocomplete="off"
+        ></textarea>
+        <div class="row">
+          <button id="search-btn" type="submit">Искать · Search</button>
+          <span class="hint">Enter — поиск, Shift+Enter — новая строка</span>
+        </div>
+      </form>
+
+      <div id="examples" class="examples" aria-label="Примеры запросов">
+        <button type="button" class="chip" data-q="плагин для Obsidian с ИИ">
+          плагин для Obsidian с ИИ
+        </button>
+        <button type="button" class="chip" data-q="MCP для Telegram">
+          MCP для Telegram
+        </button>
+        <button type="button" class="chip" data-q="Cursor rules ADHD">
+          Cursor rules ADHD
+        </button>
+        <button type="button" class="chip" data-q="browser agent chrome">
+          browser agent chrome
+        </button>
+      </div>
+
+      <div id="empty" class="empty">
+        <h2>Пусто · Empty</h2>
+        <p>
+          Введите задачу своими словами или нажмите пример выше. Каталог
+          статический: совпадения считаются по ключевым словам, тегам и названию.
+        </p>
+      </div>
+
+      <p id="status" class="status" role="status"></p>
+      <div id="results" class="results"></div>
+
+      <div id="error" class="error" hidden>
+        <strong>Не удалось загрузить каталог.</strong>
+        Браузеры блокируют <code>file://</code>. Откройте через локальный сервер:
+        <code>python3 -m http.server 8080</code>
+        и зайдите на
+        <code>http://localhost:8080</code>.
+      </div>
+
+      <footer>
+        Статический каталог ·
+        <a href="https://github.com/xgrybvo6508-dot/ai-addon-finder">исходники</a>
+        · правки в <code>data/catalog.json</code>
+      </footer>
+    </div>
+    <script src="js/app.js" defer></script>
+  </body>
+</html>
