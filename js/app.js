@@ -1,5 +1,5 @@
 const CATALOG_URL = "data/catalog.json";
-const MIN_GOOD_SCORE = 8;
+const MIN_GOOD_SCORE = 24;
 const STOPWORDS = new Set([
   "для",
   "без",
@@ -22,7 +22,7 @@ const STOPWORDS = new Set([
 const SYNONYMS = {
   плагин: ["plugin", "plugins", "addon"],
   plugin: ["плагин", "plugins", "addon"],
-  ии: ["ai", "llm", "gpt", "copilot"],
+  ии: ["ai", "llm", "gpt"],
   ai: ["ии", "llm", "gpt"],
   телеграм: ["telegram"],
   телеграмм: ["telegram"],
@@ -93,8 +93,9 @@ function scoreItem(item, tokens) {
   for (const tok of tokens) {
     let local = 0;
     if (name === tok) local += 14;
-    else if (name.includes(tok)) local += 10;
-    if (id === tok || id.includes(tok)) local += 8;
+    else if (tok.length >= 3 && name.includes(tok)) local += 10;
+    if (id === tok) local += 8;
+    else if (tok.length >= 3 && id.includes(tok)) local += 8;
     if (category === tok) local += 6;
     if (tags.some((t) => t === tok || (tok.length >= 3 && t.includes(tok)))) {
       local += 7;
