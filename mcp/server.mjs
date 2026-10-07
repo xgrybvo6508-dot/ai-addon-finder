@@ -52,6 +52,7 @@ async function callFind(query) {
   return {
     query,
     english: result.plan?.english,
+    concepts: (result.plan?.concepts || []).map((c) => c.label),
     queries: result.plan?.queries,
     rateLimit: result.rateLimit,
     fallback: result.fallback,
@@ -60,6 +61,7 @@ async function callFind(query) {
       url: c.url,
       stars: c.stars,
       insight_ru: c.insight_ru,
+      why_ru: c.why_ru,
       install_ru: c.install_ru,
       source: c.source,
       tags: c.tags,

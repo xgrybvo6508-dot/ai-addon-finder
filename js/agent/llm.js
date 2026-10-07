@@ -64,20 +64,23 @@ export async function chatJson({
 
 export async function rewritePlanWithLlm(query, plan, llm, fetchFn, signal) {
   try {
-    const json = await chatJson({
+    return await chatJson({
       ...llm,
       fetchFn,
       signal,
       system:
-        "You plan GitHub repository searches for AI addons (MCP, Obsidian plugins, Cursor rules, Chrome extensions). Return JSON only: {\"english\":\"...\",\"keywords\":[\"...\"],\"queries\":[\"q1\",\"q2\"]}. Max 3 queries. Do not invent site URLs.",
-      user: `User query: ${query}\nHeuristic plan: ${JSON.stringify({
+        'Turn a long user prompt into GitHub search intent. Return JSON only: {"english":"...","intent":"plugin|mcp|extension|library|agent","concepts":[{"id":"slug","label":"ru","terms":["en",...]}],"mustHave":["id"],"niceToHave":["id"],"keywords":["..."],"queries":["q1","q2","q3"]}. 3-5 queries. No URLs. No invented repos.',
+      user: `User prompt:\n${query}\n\nHeuristic:\n${JSON.stringify({
         english: plan.english,
-        keywords: plan.keywords,
+        concepts: (plan.concepts || []).map((c) => ({
+          id: c.id,
+          label: c.label,
+          terms: c.terms,
+        })),
         queries: plan.queries,
-        intents: plan.intents,
+        artifacts: plan.artifacts,
       })}`,
     });
-    return json;
   } catch {
     return null;
   }
@@ -90,6 +93,7 @@ export async function polishInsightsWithLlm(query, cards, llm, fetchFn, signal) 
     name: c.name,
     description: c.description || "",
     topics: c.tags || [],
+    matched: (c.matchedConcepts || []).map((x) => x.label || x),
     readme: (c.readme || "").slice(0, 900),
   }));
   try {
@@ -98,8 +102,8 @@ export async function polishInsightsWithLlm(query, cards, llm, fetchFn, signal) 
       fetchFn,
       signal,
       system:
-        "Write short Russian insights for GitHub repos already found. Return JSON array [{url, insight_ru, install_ru}]. Use only provided urls. No new repos. 1–2 sentences each.",
-      user: `Query: ${query}\nRepos:\n${JSON.stringify(context)}`,
+        "Explain why each provided GitHub repo fits the user need. Return JSON array [{url, insight_ru, install_ru, why_ru}]. why_ru starts with «Почему подходит под твой запрос:». Use only given urls. No new repos. 1–2 sentences.",
+      user: `Need: ${query}\nRepos:\n${JSON.stringify(context)}`,
     });
     if (!Array.isArray(json)) return cards;
     return cards.map((card) => {
@@ -109,6 +113,7 @@ export async function polishInsightsWithLlm(query, cards, llm, fetchFn, signal) 
         ...card,
         insight_ru: String(hit.insight_ru || card.insight_ru).slice(0, 320),
         install_ru: String(hit.install_ru || card.install_ru).slice(0, 280),
+        why_ru: String(hit.why_ru || card.why_ru || "").slice(0, 280),
         llm: true,
       };
     });

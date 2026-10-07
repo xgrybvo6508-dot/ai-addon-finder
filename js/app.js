@@ -1,4 +1,5 @@
 import { CATEGORY_RU } from "./agent/catalog.js";
+import { customConcept } from "./agent/concepts.js";
 import { runAgent } from "./agent/pipeline.js";
 import {
   DEFAULT_MODELS,
@@ -28,6 +29,7 @@ const els = {
   error: document.getElementById("error"),
   examples: document.getElementById("examples"),
   steps: document.getElementById("steps"),
+  understood: document.getElementById("understood"),
   settings: document.getElementById("settings"),
   settingsToggle: document.getElementById("settings-toggle"),
   ghToken: document.getElementById("gh-token"),
@@ -41,6 +43,8 @@ const els = {
 let catalog = [];
 let abort = null;
 let countdownTimer = null;
+let lastQuery = "";
+let lastConcepts = [];
 
 function escapeHtml(s) {
   return String(s)
@@ -76,6 +80,9 @@ function renderCards(items) {
       const install = item.install_ru
         ? `<p class="install">${escapeHtml(item.install_ru)}</p>`
         : "";
+      const why = item.why_ru
+        ? `<p class="why">${escapeHtml(item.why_ru)}</p>`
+        : "";
       return `<article class="card">
         <div class="card-top">
           <h2>${escapeHtml(item.name)}</h2>
@@ -86,6 +93,7 @@ function renderCards(items) {
           </div>
         </div>
         <p class="insight">${escapeHtml(item.insight_ru)}</p>
+        ${why}
         ${item.insight_en ? `<p class="insight-en">${escapeHtml(item.insight_en)}</p>` : ""}
         ${install}
         <div class="tags">${tags}</div>
@@ -136,12 +144,40 @@ function startCountdown(iso) {
   tick();
 }
 
+function renderUnderstood(concepts) {
+  lastConcepts = (concepts || []).map((c) => ({
+    id: c.id,
+    label: c.label,
+    weight: c.weight || 2,
+    terms: c.terms || [c.label],
+    rx: c.rx || [],
+  }));
+  if (!lastConcepts.length) {
+    els.understood.hidden = true;
+    els.understood.innerHTML = "";
+    return;
+  }
+  els.understood.hidden = false;
+  const chips = lastConcepts
+    .map(
+      (c) =>
+        `<button type="button" class="chip chip-concept" data-forget="${escapeHtml(c.id)}">${escapeHtml(c.label)}<span class="x" aria-hidden="true">×</span></button>`
+    )
+    .join("");
+  els.understood.innerHTML = `<span class="understood-label">Я понял</span>
+    <div class="understood-chips">${chips}</div>
+    <div class="understood-add">
+      <input id="add-concept" type="text" placeholder="Добавить понятие" />
+      <button type="button" id="rerun-concepts" class="secondary">Искать снова</button>
+    </div>`;
+}
+
 function rateBanner(result) {
   if (!result.rateLimit) return "";
   return `<p class="fallback-tip">Лимит GitHub Search (без токена ~10 запросов/мин). Показан каталог, повтор через <strong id="rate-left">…</strong> с. Токен в Настройках поднимает лимит.</p>`;
 }
 
-async function search(query) {
+async function search(query, forcedConcepts) {
   const raw = query.trim();
   els.error.hidden = true;
   clearInterval(countdownTimer);
@@ -150,9 +186,11 @@ async function search(query) {
     els.results.innerHTML = "";
     els.status.innerHTML = "";
     els.steps.hidden = true;
+    els.understood.hidden = true;
     els.empty.hidden = false;
     return;
   }
+  lastQuery = raw;
 
   if (abort) abort.abort();
   abort = new AbortController();
@@ -169,6 +207,7 @@ async function search(query) {
       catalog,
       signal: abort.signal,
       githubToken: s.githubToken,
+      forcedConcepts: forcedConcepts || undefined,
       llm: s.llmKey ? { key: s.llmKey, base: s.llmBase, model: s.llmModel } : null,
       onStep(id, state, extra) {
         if (state === "done") done.add(id);
@@ -177,6 +216,7 @@ async function search(query) {
     });
 
     renderSteps("done", new Set(STEP_ORDER), { cached: result.cached });
+    renderUnderstood(result.plan?.concepts || []);
 
     if (result.empty) {
       els.status.innerHTML = `<strong>Ничего не нашлось</strong> · Nothing matched`;
@@ -246,6 +286,27 @@ function wireUi() {
     els.prompt.value = btn.getAttribute("data-q");
     els.prompt.focus();
     search(els.prompt.value);
+  });
+  els.understood.addEventListener("click", (e) => {
+    const forget = e.target.closest("[data-forget]");
+    if (forget) {
+      const id = forget.getAttribute("data-forget");
+      lastConcepts = lastConcepts.filter((c) => c.id !== id);
+      renderUnderstood(lastConcepts);
+      return;
+    }
+    if (e.target.id === "rerun-concepts" && lastQuery) {
+      search(lastQuery, lastConcepts);
+    }
+  });
+  els.understood.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" || e.target.id !== "add-concept") return;
+    e.preventDefault();
+    const made = customConcept(e.target.value);
+    if (!made) return;
+    if (!lastConcepts.some((c) => c.id === made.id)) lastConcepts.push(made);
+    e.target.value = "";
+    renderUnderstood(lastConcepts);
   });
   els.settingsToggle.addEventListener("click", () => {
     const open = els.settings.hidden;

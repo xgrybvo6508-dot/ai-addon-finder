@@ -28,8 +28,8 @@
             </button>
           </div>
           <p class="lede">
-            Агент понимает запрос, ищет на <em>GitHub</em> и смешивает с каталогом.
-            Ключи не обязательны — статическая страница на GitHub Pages.
+            Длинный запрос своими словами — агент вытаскивает понятия, ищет на
+            <em>GitHub</em> и пишет, почему карточка подходит. Без ключей.
           </p>
         </div>
       </header>
@@ -69,7 +69,7 @@
           id="prompt"
           name="prompt"
           rows="3"
-          placeholder="Например: плагин для Obsidian с ИИ"
+          placeholder="Опишите задачу своими словами: что должно делать, где жить, зачем…"
           autocomplete="off"
         ></textarea>
         <div class="row">
@@ -79,31 +79,31 @@
       </form>
 
       <div id="examples" class="examples" aria-label="Примеры запросов">
-        <button type="button" class="chip" data-q="плагин для Obsidian с ИИ">
-          плагин для Obsidian с ИИ
+        <button type="button" class="chip" data-q="найти плагин, который позволяет ИИ последовательно работать с помощью графа, который он сам создал, и это экономит токены">
+          граф + экономия токенов
         </button>
-        <button type="button" class="chip" data-q="MCP для Telegram">
-          MCP для Telegram
+        <button type="button" class="chip" data-q="хочу чтобы ИИ запоминал мои заметки из Obsidian и сам предлагал связи между ними">
+          память Obsidian
         </button>
-        <button type="button" class="chip" data-q="cursor rules">
-          cursor rules
+        <button type="button" class="chip" data-q="что-то что само читает мой телеграм канал и пишет дайджест через нейросеть">
+          дайджест Telegram
         </button>
-        <button type="button" class="chip" data-q="расширение хром для ИИ агента">
-          расширение хром для ИИ агента
+        <button type="button" class="chip" data-q="агент который сам кликает в браузере и заполняет формы за меня">
+          клики в браузере
         </button>
-        <button type="button" class="chip" data-q="notion ai automation">
-          notion ai automation
+        <button type="button" class="chip" data-q="I need a tool that builds a graph of my codebase so the coding agent pulls only relevant files and spends fewer tokens">
+          codebase graph (EN)
         </button>
       </div>
 
       <ol id="steps" class="steps" hidden aria-live="polite"></ol>
+      <div id="understood" class="understood" hidden></div>
 
       <div id="empty" class="empty">
         <h2>Пусто · Empty</h2>
         <p>
-          Нажмите пример или введите задачу. Без ключа агент ходит в публичный
-          GitHub Search и запасной каталог. С ключом OpenRouter — лучше план и
-          формулировки «для чего».
+          Можно длинно и разговорно. Агент снимет «воду», покажет понятые
+          понятия чипами — их можно снять и искать снова. Без ключа тоже работает.
         </p>
       </div>
 
