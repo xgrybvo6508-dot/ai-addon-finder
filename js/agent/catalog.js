@@ -1,3 +1,5 @@
+import { matchConceptHits } from "./concepts.js";
+import { itemBlob } from "./score.js";
 import { expandTokens, normalize, tokenize } from "./text.js";
 
 export const MIN_GOOD_SCORE = 24;
@@ -49,10 +51,17 @@ export function scoreCatalogItem(item, tokens) {
   return score;
 }
 
-export function searchCatalog(catalog, query, limit = 8) {
+export function searchCatalog(catalog, query, limit = 8, concepts = []) {
   const tokens = expandTokens(tokenize(query));
   const ranked = (catalog || [])
-    .map((item) => ({ item, score: scoreCatalogItem(item, tokens) }))
+    .map((item) => {
+      let score = scoreCatalogItem(item, tokens);
+      const matched = matchConceptHits(itemBlob(item), concepts);
+      for (const c of matched) score += (c.weight || 1) * 14;
+      score += Math.min(40, Math.log10((item.stars || 0) + 1) * 11);
+      if (matched.length >= 2) score += 24;
+      return { item, score, matched };
+    })
     .sort((a, b) => b.score - a.score);
 
   const best = ranked[0]?.score || 0;

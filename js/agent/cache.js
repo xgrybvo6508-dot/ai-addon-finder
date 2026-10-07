@@ -1,8 +1,10 @@
-const PREFIX = "aaf:cache:v1:";
+const PREFIX = "aaf:cache:v2:";
 export const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-export function cacheKey(query) {
-  return PREFIX + String(query || "").trim().toLowerCase().replace(/\s+/g, " ");
+export function cacheKey(query, extra = "") {
+  const q = String(query || "").trim().toLowerCase().replace(/\s+/g, " ");
+  const x = String(extra || "").trim();
+  return PREFIX + q + (x ? `::${x}` : "");
 }
 
 export function memoryStore() {
@@ -44,13 +46,13 @@ export function localStorageStore() {
   };
 }
 
-export function readCache(store, query) {
-  const row = store.get(cacheKey(query));
+export function readCache(store, query, extra = "") {
+  const row = store.get(cacheKey(query, extra));
   if (!row || typeof row !== "object") return null;
   if (Date.now() - Number(row.ts || 0) > CACHE_TTL_MS) return null;
   return row.payload || null;
 }
 
-export function writeCache(store, query, payload) {
-  store.set(cacheKey(query), { ts: Date.now(), payload });
+export function writeCache(store, query, payload, extra = "") {
+  store.set(cacheKey(query, extra), { ts: Date.now(), payload });
 }

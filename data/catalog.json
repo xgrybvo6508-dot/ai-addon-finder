@@ -119,7 +119,10 @@
         "семантика",
         "ии",
         "ai",
-        "заметки"
+        "заметки",
+        "память",
+        "memory",
+        "related"
       ]
     },
     {
@@ -260,7 +263,11 @@
         "agent",
         "автоматизация",
         "automation",
-        "web"
+        "web",
+        "click",
+        "клик",
+        "forms",
+        "формы"
       ]
     },
     {
@@ -375,7 +382,12 @@
         "microsoft",
         "автоматизация",
         "automation",
-        "chrome"
+        "chrome",
+        "click",
+        "клик",
+        "forms",
+        "формы",
+        "fill"
       ]
     },
     {
@@ -444,7 +456,12 @@
         "automation",
         "selenium",
         "playwright",
-        "web"
+        "web",
+        "click",
+        "клик",
+        "forms",
+        "формы",
+        "fill"
       ]
     },
     {
