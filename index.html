@@ -6,7 +6,7 @@
     <title>AI Addon Finder</title>
     <meta
       name="description"
-      content="Поиск AI-аддонов: Cursor rules, Obsidian-плагины, MCP-серверы и skills."
+      content="Агент ищет AI-аддоны на GitHub: Cursor, Obsidian, MCP, skills. Без сервера и без ключей."
     />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='12' width='64' height='64' fill='%23d4a054'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="css/style.css" />
@@ -20,14 +20,48 @@
             <path d="M22 16v12M12 16l10 6 10-6" stroke="#1a140c" stroke-width="1.8" />
           </svg>
         </div>
-        <div>
-          <h1>AI Addon Finder</h1>
+        <div class="header-text">
+          <div class="title-row">
+            <h1>AI Addon Finder</h1>
+            <button type="button" id="settings-toggle" aria-expanded="false">
+              Настройки
+            </button>
+          </div>
           <p class="lede">
-            Найдите <em>плагин, MCP, skill или правило</em> по короткому запросу.
-            Русский или English — без бэкенда и ключей.
+            Агент понимает запрос, ищет на <em>GitHub</em> и смешивает с каталогом.
+            Ключи не обязательны — статическая страница на GitHub Pages.
           </p>
         </div>
       </header>
+
+      <form id="settings" class="settings" hidden>
+          <p class="settings-lead">
+            Ключи только в <code>localStorage</code> этого браузера. Репозиторий и Pages
+            ключей не содержат. Cursor-модели отсюда вызвать нельзя.
+          </p>
+          <label for="gh-token">GitHub token · опционально, выше лимит Search</label>
+          <input id="gh-token" type="password" autocomplete="off" placeholder="ghp_…" />
+
+          <label for="llm-provider">LLM · опционально (BYOK)</label>
+          <select id="llm-provider">
+            <option value="openrouter">OpenRouter</option>
+            <option value="openai">OpenAI-compatible</option>
+          </select>
+
+          <label for="llm-key">LLM API key</label>
+          <input id="llm-key" type="password" autocomplete="off" placeholder="sk-…" />
+
+          <label for="llm-base">Base URL</label>
+          <input id="llm-base" type="url" placeholder="https://openrouter.ai/api/v1" />
+
+          <label for="llm-model">Модель</label>
+          <select id="llm-model"></select>
+
+          <div class="row">
+            <button type="submit" class="secondary">Сохранить</button>
+            <button type="button" id="clear-keys" class="ghost">Очистить ключи</button>
+          </div>
+      </form>
 
       <form id="search-form" class="search">
         <label for="prompt">Запрос · Prompt</label>
@@ -51,19 +85,25 @@
         <button type="button" class="chip" data-q="MCP для Telegram">
           MCP для Telegram
         </button>
-        <button type="button" class="chip" data-q="Cursor rules ADHD">
-          Cursor rules ADHD
+        <button type="button" class="chip" data-q="cursor rules">
+          cursor rules
         </button>
-        <button type="button" class="chip" data-q="browser agent chrome">
-          browser agent chrome
+        <button type="button" class="chip" data-q="расширение хром для ИИ агента">
+          расширение хром для ИИ агента
+        </button>
+        <button type="button" class="chip" data-q="notion ai automation">
+          notion ai automation
         </button>
       </div>
+
+      <ol id="steps" class="steps" hidden aria-live="polite"></ol>
 
       <div id="empty" class="empty">
         <h2>Пусто · Empty</h2>
         <p>
-          Введите задачу своими словами или нажмите пример выше. Каталог
-          статический: совпадения считаются по ключевым словам, тегам и названию.
+          Нажмите пример или введите задачу. Без ключа агент ходит в публичный
+          GitHub Search и запасной каталог. С ключом OpenRouter — лучше план и
+          формулировки «для чего».
         </p>
       </div>
 
@@ -79,11 +119,11 @@
       </div>
 
       <footer>
-        Статический каталог ·
+        Агент + каталог ·
         <a href="https://github.com/xgrybvo6508-dot/ai-addon-finder">исходники</a>
-        · правки в <code>data/catalog.json</code>
+        · ключи не в репозитории
       </footer>
     </div>
-    <script src="js/app.js" defer></script>
+    <script type="module" src="js/app.js"></script>
   </body>
 </html>

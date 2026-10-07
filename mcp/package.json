@@ -1,0 +1,10 @@
+{
+  "name": "ai-addon-finder-mcp",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "stdio MCP server: find_ai_addons — same search as the static site",
+  "bin": {
+    "ai-addon-finder-mcp": "./server.mjs"
+  }
+}
