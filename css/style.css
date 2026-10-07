@@ -57,6 +57,119 @@ header {
   margin-bottom: 28px;
 }
 
+.header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.title-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#settings-toggle,
+.secondary,
+.ghost {
+  appearance: none;
+  border-radius: 999px;
+  font: 650 0.85rem/1 var(--ui);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+#settings-toggle,
+.secondary {
+  border: 1px solid var(--line);
+  background: var(--chip);
+  color: var(--text);
+}
+
+.ghost {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+}
+
+.settings {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.settings-lead {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.settings label {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 10px 4px 6px;
+}
+
+.settings input,
+.settings select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 10px 12px;
+  font: 0.95rem/1.4 var(--ui);
+}
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.steps li {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--faint);
+  font-size: 0.8rem;
+}
+
+.steps li.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.steps li.done {
+  color: var(--ok);
+  border-color: #35553c;
+}
+
+.source {
+  font-size: 0.75rem;
+  color: var(--faint);
+}
+
+.install {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+#search-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 .mark {
   flex: none;
   width: 44px;
